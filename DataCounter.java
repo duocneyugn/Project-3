@@ -15,7 +15,12 @@ class DataCount<E> {
      * The count for the data element.
      */
     int count;
-
+    
+    /**
+     * Reference to the next DataCount for separate chaining.
+     */
+    DataCount<E> next;
+    
     /**
      * Create a new data count.
      * 
@@ -25,6 +30,7 @@ class DataCount<E> {
     DataCount(E data, int count) {
         this.data = data;
         this.count = count;
+        this.next = null;
     }
 }
 
@@ -54,7 +60,7 @@ public interface DataCounter<E> {
      * 
      * @return the number of unique data elements in the structure.
      */
-    public int getSize();
+    public int getSize(); //increment if the word is unique?
 
     /**
      * Get an array of all of the data counts in the DataCounter structure. The
@@ -64,6 +70,6 @@ public interface DataCounter<E> {
      * 
      * @return an array of the data counts.
      */
-    public DataCount<E>[] getCounts();
+    public DataCount<E>[] getCounts(); //ask what the second sentence mean
 
 }
