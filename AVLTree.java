@@ -1,4 +1,3 @@
-
 /**
  * BSTCounter implements the DataCounter interface using a binary search tree to
  * store the data items and counts.
@@ -6,7 +5,7 @@
  * @param <E> The type of the data elements. Note that we have strengthened the
  *            constraints on E such that E is now a Comparable.
  */
-public class BinarySearchTree<E extends Comparable<? super E>> implements
+public class AVLTree<E extends Comparable<? super E>> implements
         DataCounter<E> {
 
     /**
@@ -63,12 +62,18 @@ public class BinarySearchTree<E extends Comparable<? super E>> implements
     /**
      * Create an empty binary search tree.
      */
-    public BinarySearchTree() {
+    public AVLTree() {
         overallRoot = null;
         size = 0;
     }
 
-    /** {@inheritDoc} */
+	/**
+	 * Essentially the same as the incCount method found
+	 * in the BinarySearchTree given to us. The only
+	 * change is that instead of creating a new node
+	 * once a null spot is found, it goes straight
+	 * into the insert method
+	 */
     public void incCount(E data) {
         if (overallRoot == null) {
             overallRoot = new BSTNode(data);
@@ -76,26 +81,22 @@ public class BinarySearchTree<E extends Comparable<? super E>> implements
             // traverse the tree
             BSTNode currentNode = overallRoot;
             while (true) {
-
-                // compare the data to be inserted with the data at the current
-                // node
                 int cmp = data.compareTo(currentNode.data);
 
                 if (cmp == 0) {
-                    // current node is a match
                     currentNode.count++;
                     return;
                 } else if (cmp < 0) {
-                    // new data goes to the left of the current node
                     if (currentNode.left == null) {
-                        currentNode.left = new BSTNode(data);
+//                        currentNode.left = new BSTNode(data);
+                    	insert(data);
                         return;
                     }
                     currentNode = currentNode.left;
                 } else {
-                    // new data goes to the right of the current node
                     if (currentNode.right == null) {
-                        currentNode.right = new BSTNode(data);
+//                        currentNode.right = new BSTNode(data);
+                    	insert(data);
                         return;
                     }
                     currentNode = currentNode.right;
@@ -104,6 +105,31 @@ public class BinarySearchTree<E extends Comparable<? super E>> implements
         }
     }
 
+    /**
+     * Searches for and returns the node containing given data.
+     */
+	public DataCount<E> search(E word) {
+		BSTNode node = search(overallRoot, word);
+		DataCount<E> result = null;
+		if(node != null) {
+			result = new DataCount(word, node.count); 
+		}
+		return result;
+	}
+	
+    public BSTNode search(BSTNode node, E data) {
+
+        if (node == null)
+        	return null;
+        int cmp = data.compareTo(node.data);
+        if (cmp < 0)
+        	return search(node.left, data);
+        else if (cmp > 0)
+        	return search(node.right, data);
+        else
+        	return node;
+    }
+    
     /** {@inheritDoc} */
     public int getSize() {
         return size;
@@ -168,27 +194,83 @@ public class BinarySearchTree<E extends Comparable<? super E>> implements
     }
     
     /**
-     * Searches for and returns the node containing given data.
+     * @return the height of the tree from the given node.
      */
-	public DataCount<E> search(E word) {
-		BSTNode node = search(overallRoot, word);
-		DataCount<E> result = null;
-		if(node != null) {
-			result = new DataCount(word, node.count); 
-		}
-		return result;
-	}
-	
-    public BSTNode search(BSTNode node, E data) {
-
-        if (node == null)
-        	return null;
-        int cmp = data.compareTo(node.data);
-        if (cmp < 0)
-        	return search(node.left, data);
-        else if (cmp > 0)
-        	return search(node.right, data);
+    private int height(BSTNode x) {
+        if (x == null) return -1;
+        return 1 + Math.max(height(x.left), height(x.right));
+    }
+    
+    /**
+     * Inserts a node into the AVL Tree.
+     */
+    public void insert( E x )
+    {
+        overallRoot = insert( x, overallRoot );
+    }
+    private BSTNode insert( E x,BSTNode t )
+    {
+        if( t == null )
+            return new BSTNode( x );
+        
+        int compareResult = x.compareTo( t.data );
+        
+        if( compareResult < 0 )
+            t.left = insert( x, t.left );
+        else if( compareResult >= 0 )
+            t.right = insert( x, t.right );
+        return balance( t );
+    }
+    
+    /**
+     * Checks whether the tree is balanced, and if not,
+     * balances the tree using the rotation methods
+     */
+    private BSTNode balance( BSTNode t )
+    {
+        if( t == null )
+            return t;
+        
+        if( height( t.left ) - height( t.right ) > 1 )
+            if( height( t.left.left ) >= height( t.left.right ) )
+                t = rotateWithLeftChild( t );
+            else
+                t = doubleWithLeftChild( t );
         else
-        	return node;
+        if( height( t.right ) - height( t.left ) > 1 )
+            if( height( t.right.right ) >= height( t.right.left ) )
+                t = rotateWithRightChild( t );
+            else
+                t = doubleWithRightChild( t );
+
+        return t;
+    }
+    
+    /**
+     * Rotation methods for balancing the tree.
+     */
+    private BSTNode rotateWithLeftChild( BSTNode k2 )
+    {
+        BSTNode k1 = k2.left;
+        k2.left = k1.right;
+        k1.right = k2;
+        return k1;
+    }
+    private BSTNode rotateWithRightChild( BSTNode k1 )
+    {
+        BSTNode k2 = k1.right;
+        k1.right = k2.left;
+        k2.left = k1;
+        return k2;
+    }
+    private BSTNode doubleWithLeftChild( BSTNode k3 )
+    {
+        k3.left = rotateWithRightChild( k3.left );
+        return rotateWithLeftChild( k3 );
+    }
+    private BSTNode doubleWithRightChild( BSTNode k1 )
+    {
+        k1.right = rotateWithLeftChild( k1.right );
+        return rotateWithRightChild( k1 );
     }
 }

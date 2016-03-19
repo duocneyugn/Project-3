@@ -71,5 +71,7 @@ public interface DataCounter<E> {
      * @return an array of the data counts.
      */
     public DataCount<E>[] getCounts(); //ask what the second sentence mean
+    
+    public DataCount<E> search(E word); //returns the data count with the target word
 
 }

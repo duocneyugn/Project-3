@@ -16,7 +16,6 @@ public class HashTable implements DataCounter<String> {
 		this.table = new DataCount[2];
 	}
 	
-
     /** {@inheritDoc} */
     public DataCount<String>[] getCounts() {
         DataCount<String>[] result = new DataCount[size];

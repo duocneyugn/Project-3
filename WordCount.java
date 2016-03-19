@@ -6,13 +6,23 @@ import java.io.IOException;
  */
 public class WordCount {
 
-	private static void countWords(String file) {
-		DataCounter<String> counter = new HashTable();
-		//sdfadf
+	private static void countWords(String backEndStructure, String analyze, String file) {
+
+		DataCounter<String> counter;
+		if(backEndStructure.equals("h")) {
+			counter = new HashTable();
+		}
+		else if(backEndStructure.equals("b")) {
+			counter = new BinarySearchTree();
+		}
+		else {
+			counter = new AVLTree();
+		}
+
 		try {
 			FileWordReader reader = new FileWordReader(file);
 			String word = reader.nextWord();
-			
+
 			while (word != null) {
 				counter.incCount(word);
 				word = reader.nextWord();
@@ -23,16 +33,20 @@ public class WordCount {
 		}
 
 		DataCount<String>[] counts = counter.getCounts();
-		//System.out.println(counter.getSize());
-		//System.out.println(counts.length);
-		sortByDescendingCount(counts); //CAN I MODIFY THIS???
-
-		int total = 0;
-		for (DataCount<String> c : counts) {
-			System.out.println(c.count + " \t" + c.data);
-			total += c.count;
+		boolean hashTable = false;
+		if(backEndStructure.endsWith("h")){
+			hashTable = true;	
 		}
-		System.out.println("total word: " + total);
+		sortByDescendingCount(counts, hashTable); 	//sorting algorithm for hashTable and AVL Tree are different.
+
+		if(analyze.equals("frequency")) {
+			for (DataCount<String> c : counts) {
+				System.out.println(c.count + " \t" + c.data);
+			} 
+		}
+		else {
+			System.out.println("Total unique words: " +counts.length);
+		}
 	}
 
 	/**
@@ -54,12 +68,27 @@ public class WordCount {
 	 * @param counts array to be sorted.
 	 */
 	private static <E extends Comparable<? super E>> void sortByDescendingCount(
-			DataCount<E>[] counts) {
+			DataCount<E>[] counts, boolean hashTable) {
 		//CAN I MODIFY THE ARGUMENT???
-		DataCount<E>[] result = new DataCount[counts.length];
-		for(int i = 1; i < result.length; i++) {
-			int max = findMax(counts,i); //find max
-			swap(counts, i-1, max); //swap previous position with max starting position
+		if(hashTable) {
+			DataCount<E>[] result = new DataCount[counts.length];
+			for(int i = 1; i < result.length; i++) {
+				int max = findMax(counts,i); //find max
+				swap(counts, i-1, max); //swap previous position with max starting position
+			}
+		}
+		else {
+			for (int i = 1; i < counts.length; i++) {
+				DataCount<E> x = counts[i];
+				int j;
+				for (j = i - 1; j >= 0; j--) {
+					if (counts[j].count >= x.count) {
+						break;
+					}
+					counts[j + 1] = counts[j];
+				}
+				counts[j + 1] = x;
+			}
 		}
 	}
 
@@ -86,10 +115,18 @@ public class WordCount {
 
 
 	public static void main(String[] args) {
-		if (args.length != 1) {
+		if (args.length != 3) {
 			System.err.println("Usage: filename of document to analyze");
 			System.exit(1);
 		}
-		countWords(args[0]);
+		if(!args[0].equals("b") && !args[0].equals("a") && !args[0].equals("h")) {
+			System.err.println("Usage: incorrect back end structure");
+			System.exit(1);
+		}
+		if(!args[1].equals("frequency") && !args[1].equals("num_unique")) {
+			System.err.println("Usage: invalid analysis method");
+			System.exit(1);
+		}
+		countWords(args[0], args[1], args[2]);
 	}
 }
