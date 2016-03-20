@@ -1,5 +1,7 @@
 
 /**
+ * Data Structure and Algorithm Analysis
+ * Duoc Nguyen and Patrick Leung 
  * BSTCounter implements the DataCounter interface using a binary search tree to
  * store the data items and counts.
  *
@@ -168,7 +170,7 @@ public class BinarySearchTree<E extends Comparable<? super E>> implements
     }
     
     /**
-     * Searches for and returns the node containing given data.
+     * Searches for and returns the DataCount containing given data.
      */
 	public DataCount<E> search(E word) {
 		BSTNode node = search(overallRoot, word);

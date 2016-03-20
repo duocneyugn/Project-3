@@ -1,11 +1,19 @@
 import java.io.IOException;
 
 /**
+ * Data Structure and Algorithm Analysis
+ * Duoc Nguyen and Patrick Leung 
  * An executable that counts the words in a files and prints out the counts in
  * descending order. You will need to modify this file.
  */
 public class WordCount {
 
+	/**
+	 * Prints out the word and it's frequency in order or alphabet order or just the number of unique words
+	 * @param backEndStructure	BST, AVLTree, or HashTable
+	 * @param analyze printing frequency or number of unique words 
+	 * @param file	file to analyze
+	 */
 	private static void countWords(String backEndStructure, String analyze, String file) {
 
 		DataCounter<String> counter;
@@ -41,16 +49,20 @@ public class WordCount {
 
 		if(analyze.equals("frequency")) {
 			for (DataCount<String> c : counts) {
+				//add "//" in front of the below System.out.println() command for benchmarks
 				System.out.println(c.count + " \t" + c.data);
+
 			} 
 		}
 		else {
+			//add "//" in front of the below System.out.println() command for benchmarks
 			System.out.println("Total unique words: " +counts.length);
 		}
 	}
 
 	/**
-	 * TODO Replace this comment with your own.
+	 * If hash table data structure is used, sorting algorithm is quick sort(average O(nlogn))
+	 * if tree data structure is used, sorting algorithm is insertion sort(average O(n^2))
 	 * 
 	 * Sort the count array in descending order of count. If two elements have
 	 * the same count, they should be in alphabetical order (for Strings, that
@@ -92,6 +104,12 @@ public class WordCount {
 		}
 	}
 
+	/**
+	 * Finds the word with most counts. If the same return word comes in first in alphabet
+	 * @param counts	The array holding data
+	 * @param from	starting position from the array
+	 * @return	the position of the word with most counts.
+	 */
 	private static <E extends Comparable<? super E>> int findMax(DataCount<E>[] counts, int from) {
 		int max = from;
 		for(int i = from; i < counts.length; i++) {
@@ -107,6 +125,12 @@ public class WordCount {
 		return max;
 	}
 
+	/**
+	 * Swap 2 elements in the array 
+	 * @param counts the array holding DataCount
+	 * @param a first element position	
+	 * @param b second element position
+	 */
 	private static <E extends Comparable<? super E>> void swap (DataCount<E>[] counts, int a, int b) {
 		DataCount<E> temp = counts[a];
 		counts[a] = counts[b];
@@ -116,7 +140,7 @@ public class WordCount {
 
 	public static void main(String[] args) {
 		if (args.length != 3) {
-			System.err.println("Usage: filename of document to analyze");
+			System.err.println("Usage: java WordCount [ -b | -a | -h ] [ -frequency | -num_unique ] <filename>");
 			System.exit(1);
 		}
 		if(!args[0].equals("b") && !args[0].equals("a") && !args[0].equals("h")) {
@@ -127,6 +151,52 @@ public class WordCount {
 			System.err.println("Usage: invalid analysis method");
 			System.exit(1);
 		}
+		if(!args[2].substring(args[2].length()-4, args[2].length()).equals(".txt")) {
+			System.err.println("Usage: invalid text file");
+			System.exit(1);
+		}
 		countWords(args[0], args[1], args[2]);
+		
 	}
+
+
+		
+		/**
+		 * BELOW LINES OF CODES WERE USED FOR BENCHMARKING
+		long start = 0; 
+		long stop = 0;
+		
+		String[] books = {"A-Garden-Diary.txt", "Der-Golem.txt", "Der-Tabak.txt", "Dumbwaiter.txt", "East-In-The-Morning.txt", "hamlet.txt", 
+				"Narrative-and-Critical-History-of-America.txt", "Self-Control-Its-Kingship-and-Majesty.txt", "The-Donkey-the-Elephant-and-the-Goat.txt", 
+				"The-East-India-Vade-Mecum.txt", "The-Love-of-Monsieur.txt", "the-new-atlantis.txt", "King-James-Bible.txt"};
+		for(int i = 0; i < books.length; i++) {
+			start = System.currentTimeMillis();
+			countWords(args[0], args[1], books[i]);
+			stop = System.currentTimeMillis();
+
+			if(args[1].equals("frequency")) {
+				if(args[0].equals("b")) {
+					System.out.println(books[i] +  "  \t" + (stop - start) + " millis");
+				} else if(args[0].equals("a")) {
+					System.out.println(books[i] +  "  \t" + (stop - start) + " millis");
+				}
+				else {
+					System.out.println(books[i] +  "  \t" + (stop - start) + " millis");
+				}
+
+			} 
+			else {
+				if(args[0].equals("b")) {
+					System.out.println(books[i] +  "  \t" + (stop - start) + " millis");
+				} else if(args[0].equals("a")) {
+					System.out.println(books[i] +  "  \t" + (stop - start) + " millis");
+				}
+				else {
+					System.out.println(books[i] +  "  \t" + (stop - start) + " millis");
+				}
+			}
+		}
+	}
+	*/
+	
 }

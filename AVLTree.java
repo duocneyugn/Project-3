@@ -1,4 +1,6 @@
 /**
+ * Data Structure and Algorithm Analysis
+ * Duoc Nguyen and Patrick Leung 
  * BSTCounter implements the DataCounter interface using a binary search tree to
  * store the data items and counts.
  *

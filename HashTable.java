@@ -1,5 +1,6 @@
 /**
- * TODO Replace this comment with your own.
+ * Data Structure and Algorithm Analysis
+ * Duoc Nguyen and Patrick Leung 
  * 
  * Stub code for an implementation of a DataCounter that uses a hash table as
  * its backing data structure. We included this stub so that it's very clear
@@ -11,6 +12,9 @@ public class HashTable implements DataCounter<String> {
 	private int size; //unique words
 	private DataCount<String>[] table;
 	
+	/**
+	 * Constructs a hash table
+	 */
 	public HashTable() {
 		this.size = 0;
 		this.table = new DataCount[2];
@@ -74,6 +78,10 @@ public class HashTable implements DataCounter<String> {
         }
     }
 
+    /**
+     * Insert DataCount in new table for rehashing function
+     * @param dataCount the element to insert in table 
+     */
     public void incCount(DataCount<String> dataCount) {
     	int hash = hash(dataCount.data);
     	DataCount<String> newData = new DataCount(dataCount.data, dataCount.count);
@@ -90,6 +98,9 @@ public class HashTable implements DataCounter<String> {
     	size++;
     }
     
+    /**
+     * Rehash the table making it more than twice as large with a prime size 
+     */
     private void rehash() {
     	DataCount<String>[] oldTable = table;
     	table = new DataCount[nextPrime(oldTable.length * 2)];
@@ -103,6 +114,11 @@ public class HashTable implements DataCounter<String> {
     	}
     }
     
+    /**
+     * Hash function from our book
+     * @param key the string to hash
+     * @return an index
+     */
     public int hash(String key)
     {
         int hashVal = 0;
@@ -117,6 +133,11 @@ public class HashTable implements DataCounter<String> {
         return hashVal;
     }
     
+    /**
+     * Gets the next prime number starting at input value
+     * @param n the starting value for next prime number 
+     * @return	a prime number
+     */
 	private static int nextPrime(int n) {
 		int k = n; //k is the next prime number
 		if(k % 2 == 0) //checks if it is an even number
@@ -126,7 +147,12 @@ public class HashTable implements DataCounter<String> {
 		}
 		return k; //this returns the next prime number 
 	}
-
+	
+	/**
+	 * Checks if n is a prime number
+	 * @param n integer value
+	 * @return	true if n is prime, else false
+	 */
 	private static boolean isPrime(int n) {
 		if(n == 2 || n == 3)
 			return true; 
@@ -137,7 +163,8 @@ public class HashTable implements DataCounter<String> {
 				return false;
 		return true; //if n is prime.
 	}
-
+	
+	/** {@inheritDoc} */
 	public DataCount<String> search(String data) {
 		int hash = hash(data);
 		DataCount<String> currentBucket = table[hash];

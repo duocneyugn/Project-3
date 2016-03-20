@@ -1,12 +1,20 @@
 import java.io.IOException;
 
 /**
+ * Data Structure and Algorithm Analysis
+ * Duoc Nguyen and Patrick Leung 
  * An executable that counts the words in a files and prints out the counts in
  * descending order. You will need to modify this file.
  */
 public class Correlator {
 
-	private static void countWords(String backEndStructure, String file, String file2) {
+	/**
+	 * Calculate the sum difference in frequency of word use in 2 files.
+	 * @param backEndStructure BST, AVLTree, or HashTable
+	 * @param file1	first file to analyze
+	 * @param file2 second file to analyze
+	 */
+	private static void wordCorrelator(String backEndStructure, String file1, String file2) {
 		DataCounter<String> counter1;
 		DataCounter<String> counter2;
 
@@ -22,14 +30,14 @@ public class Correlator {
 		}
 
 		try {
-			FileWordReader reader = new FileWordReader(file);
+			FileWordReader reader = new FileWordReader(file1);
 			String word = reader.nextWord();
 			while (word != null) {
 				counter1.incCount(word);
 				word = reader.nextWord();
 			}
 		} catch (IOException e) {
-			System.err.println("Error processing " + file + e);
+			System.err.println("Error processing " + file1 + e);
 			System.exit(1);
 		}
 		try {
@@ -46,13 +54,19 @@ public class Correlator {
 
 		int sumDifferences = 0;
 		DataCount<String>[] counts1 = counter1.getCounts();
-		sortByDescendingCount(counts1);
+		//sortByDescendingCount(counts1);
 		removeOutliers(counts1); //removes the insignificant words
 		//prints difference of the two texts
 		int sumDiff = sumDiff(counts1, counter2, backEndStructure);
+		//add "//" in front of the below System.out.println() command for benchmarks
 		System.out.println("The sum difference is: " + sumDiff); //prints the sum diff
 	}
 
+	/**
+	 * Remove words with normalized frequencies above 0.01 (1%) and below 0.0001 (0.01%)
+	 * This also known as removing outliers that insignificant to our analysis.
+	 * @param counts the array to remove outliers
+	 */
 	private static void removeOutliers(DataCount<String>[] counts) {
 		//removes the outliers 
 		int total = 0;
@@ -75,6 +89,16 @@ public class Correlator {
 
 	}
 
+	/**
+	 * Gets the sum difference of frequency words that are in both files
+	 * This algorithm's runtime depends on the data structure used to contain words in file 2
+	 * If data structure is a hash table then algorithm is O(n) because search is O(1)
+	 * If data structure is a tree then algorithm is O(nlog n) because search is O(log n)
+	 * @param a	Array of DataCount containing word and count in file 1
+	 * @param b	The tree or table that is used to contain words in file 2
+	 * @param backEndStructure	The data structure used
+	 * @return the sum difference
+	 */
 	private static int sumDiff(DataCount<String>[] a, DataCounter<String> b, String backEndStructure) {
 		int sumDiff = 0;
 		for(DataCount<String> x: a) {
@@ -92,39 +116,6 @@ public class Correlator {
 		return sumDiff;
 	}
 
-	/**
-	 * TODO Replace this comment with your own.
-	 * 
-	 * Sort the count array in descending order of count. If two elements have
-	 * the same count, they should be in alphabetical order (for Strings, that
-	 * is. In general, use the compareTo method for the DataCount.data field).
-	 * 
-	 * This code uses insertion sort. You should modify it to use a different
-	 * sorting algorithm. NOTE: the current code assumes the array starts in
-	 * alphabetical order! You'll need to make your code deal with unsorted
-	 * arrays.
-	 * 
-	 * The generic parameter syntax here is new, but it just defines E as a
-	 * generic parameter for this method, and constrains E to be Comparable. You
-	 * shouldn't have to change it.
-	 * 
-	 * @param counts array to be sorted.
-	 */
-	private static <E extends Comparable<? super E>> void sortByDescendingCount(
-			DataCount<E>[] counts) {
-		for (int i = 1; i < counts.length; i++) {
-			DataCount<E> x = counts[i];
-			int j;
-			for (j = i - 1; j >= 0; j--) {
-				if (counts[j].count >= x.count) {
-					break;
-				}
-				counts[j + 1] = counts[j];
-			}
-			counts[j + 1] = x;
-		}
-	}
-
 	public static void main(String[] args) {
 		if (args.length != 3) {
 			System.err.println("Usage: java Correlator [b | a | h] <filename1> <filename2>");
@@ -134,13 +125,29 @@ public class Correlator {
 			System.err.println("Usage: incorrect back end structure");
 			System.exit(1);
 		}
+		if(!args[2].substring(args[2].length()-4, args[2].length()).equals(".txt") && 
+				!args[1].substring(args[1].length()-4, args[1].length()).equals(".txt")) {
+			System.err.println("Usage: invalid text file");
+			System.exit(1);
+		}
+		wordCorrelator(args[0], args[1], args[2]);	//add "//" for at the beginning of line to benchmark
+		
+		/**
+		 * Below lines of codes were used for benchmarking
 		long start = 0;
 		long stop = 0;
-		
-		start = System.currentTimeMillis();
-		countWords(args[0], args[1], args[2]);
-		stop = System.currentTimeMillis();
-		
-		System.out.println("Total time duration to complete correlator with AVLTree for " + args[1] + " and " + args[2] + " : " + (stop - start) + " Millis");
+
+		String[] books = {"A-Garden-Diary.txt", "Der-Golem.txt", "Der-Tabak.txt", "Dumbwaiter.txt", "East-In-The-Morning.txt", "hamlet.txt", 
+				"Narrative-and-Critical-History-of-America.txt", "Self-Control-Its-Kingship-and-Majesty.txt", "The-Donkey-the-Elephant-and-the-Goat.txt", 
+				"The-East-India-Vade-Mecum.txt", "The-Love-of-Monsieur.txt", "the-new-atlantis.txt", "King-James-Bible.txt"};
+
+		for(int i = 1; i < books.length - 1 ; i += 2) {
+			start = System.currentTimeMillis();
+			wordCorrelator(args[0], books[i-1], books[i]);
+			stop = System.currentTimeMillis();
+
+			System.out.println(books[i-1] + " and " + books[i] + " : " + (stop - start) + " Millis");
+		}
+		*/
 	}
 }

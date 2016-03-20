@@ -1,4 +1,6 @@
 /**
+ * Data Structure and Algorithm Analysis
+ * Duoc Nguyen and Patrick Leung 
  * Simple class to hold a piece of data and its count. The class has package
  * access so that the various implementations of DataCounter can access its
  * contents, but not client code.
@@ -72,6 +74,11 @@ public interface DataCounter<E> {
      */
     public DataCount<E>[] getCounts(); //ask what the second sentence mean
     
+    /**
+     * Search for the word target word and return in type of dataCount
+     * @param word the target word
+     * @return a DataCount with the word and counts
+     */
     public DataCount<E> search(E word); //returns the data count with the target word
 
 }
